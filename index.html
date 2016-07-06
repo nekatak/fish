@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Who's the Fish?</title>
+        <meta charset='utf-8'>
+         <script src='//cdn.jsdelivr.net/phaser/2.2.2/phaser.min.js'></script>
+    <style type='text/css'>
+        body {
+            margin: 0;
+        }</style>
+    </head>
+    <body>
+ 
+<script type='text/javascript'>
+var UserAgent=navigator.userAgent;
+var Search=UserAgent.search('Android'), Search2=UserAgent.search('iPhone'), Search3=UserAgent.search('IEMobile'), Search4=UserAgent.search('Opera Mini');
+
+var GameWidth=750, GameHeight=562;
+ if (Search!=-1||Search2!=-1||Search3!=-1||Search4!=-1){
+         GameWidth=window.innerWidth*window.devicePixelRatio; GameHeight=window.innerHeight*window.devicePixelRatio;
+ 
+}
+
+var game = new Phaser.Game(GameWidth,GameHeight,Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
+
+
+function preload() {
+    game.load.image('sky','bg.jpg');
+    game.load.image('rightmotion', 'Rest_to_right_sheet.png');
+    game.load.image('SmallFish','eat2 .png');
+    game.load.image('Sharky', 'shark.png');
+    game.load.image('Up','uparrow.png');
+    game.load.image('Down','downarrow.png');
+    game.load.image('Right','rightarrow.png');
+    game.load.image('Left','leftarrow.png');
+}
+
+var player;
+var enemy1;
+var enemy2;
+var cursors;
+
+var score = 0;
+var scoreText;
+var lives=10;
+var livesText;
+
+var up=false; var down=false; var right=false;var left=false;
+
+function create() {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+    //background
+       var background=game.add.sprite(0,0,'sky');
+   
+    
+     enemy2=game.add.group();
+    
+    enemy2.enableBody=true;
+
+    enemy1 = game.add.group();
+
+    enemy1.enableBody = true;
+    
+
+
+  //PLAYER AND SETTINGS
+    player=game.add.sprite(0.1*GameWidth, 0.1*GameHeight, 'rightmotion');
+
+      //  We need to enable physics on the player
+    game.physics.arcade.enable(player);
+
+    //  Player physics properties. Give the little guy a slight bounce.
+    player.body.bounce.y = 0.3;
+    player.body.gravity.y = 10;
+    player.body.collideWorldBounds = true;
+
+
+
+
+
+
+function createFish(){
+    for (var i = 0; i < 2; i++)
+    {
+       
+        var enemy1s = enemy1.create(1.2*GameWidth, Math.random()*GameHeight, 'SmallFish');
+
+        //  Let gravity do its thing
+        enemy1s.body.gravity.x = -50;
+            }
+            setTimeout(createFish, 1500);
+}
+
+function startPlayback() {    
+    setTimeout(createFish, 1500);
+}    
+
+startPlayback();
+
+
+function createBigFish(){
+    for (var index=0; index<2; index++){
+        var enemyS=enemy2.create(1.2*GameWidth,Math.random()*GameHeight,'Sharky');
+        
+        enemyS.body.gravity.x=-50;
+    }
+    setTimeout(createBigFish, 3500);
+}
+
+function StartPlay(){
+    setTimeout(createBigFish, 3500);
+}
+StartPlay();
+
+     //  The score
+    scoreText = game.add.text(0.73*GameWidth, 0.03*GameHeight, 'score: '+score , { fontSize: '32px', fill: '#990000' });
+
+    livesText=game.add.text(0.73*GameWidth,0.09*GameHeight,'lives: '+lives, { fontSize: '32px', fill: '#009900'});
+    //  Our controls.
+    cursors = game.input.keyboard.createCursorKeys();
+    
+
+    //MOBILE DEVICE CODE HERE!!!!!
+     if (Search!=-1||Search2!=-1||Search3!=-1||Search4!=-1){
+
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+	   //have the game centered horizontally and vertically
+
+	    game.scale.pageAlignHorizontally = true;
+
+	    game.scale.pageAlignVertically = true;
+	    //EBGALA 	    background.scale.setTo(window.innerWidth/750,window.innerHeight/600);
+	    background.width=window.innerWidth;
+	    background.height=window.innerHeight;
+        
+        this.scale.setScreenSize(true);
+        
+        upbutton=game.add.button(0.9*GameWidth,0.6*GameHeight,'Up');
+        upbutton.scale.setTo(0.2,0.2);
+        downbutton=game.add.button(0.9*GameWidth, 0.8*GameHeight,'Down');
+        downbutton.scale.setTo(0.2,0.2);
+        leftbutton=game.add.button(0*GameWidth,0.8*GameHeight, 'Left');
+        leftbutton.scale.setTo(0.6,0.6);
+        rightbutton=game.add.button(0.1*GameWidth, 0.8*GameHeight,'Right');
+        rightbutton.scale.setTo(0.5,0.5);
+    
+    leftbutton.events.inputEnabled=true;    
+    leftbutton.events.onInputOver.add(function(){left=true;});
+    leftbutton.events.onInputOut.add(function(){left=false;});
+    leftbutton.events.onInputDown.add(function(){left=true;});
+    leftbutton.events.onInputUp.add(function(){left=false;});
+    
+    rightbutton.events.inputEnabled=true;
+    rightbutton.events.onInputOver.add(function(){right=true;});
+    rightbutton.events.onInputOut.add(function(){right=false;});
+    rightbutton.events.onInputDown.add(function(){right=true;});
+    rightbutton.events.onInputUp.add(function(){right=false;});
+     
+    upbutton.events.inputEnabled=true;
+    upbutton.events.onInputOver.add(function() {up=true;});
+    upbutton.events.onInputOut.add(function() {up=false;});
+    upbutton.events.onInputDown.add(function() {up=true;});
+    upbutton.events.onInputUp.add(function() {up=false;});
+    
+    downbutton.events.inputEnabled=true;
+    downbutton.events.onInputOver.add(function() {down=true;});
+    downbutton.events.onInputOut.add(function() {down=false;});
+    downbutton.events.onInputDown.add(function() {down=true;});
+    downbutton.events.onInputUp.add(function() {down=false;});
+         
+         
+    }
+}	  
+
+
+function update() {
+        game.physics.arcade.overlap(player, enemy1, collisionFunction1, null, this);
+        game.physics.arcade.overlap(player, enemy2, collisionFunction2, null, this);
+
+    
+     //  Reset the players velocity (movement)
+    player.body.velocity.x = 0;
+    
+    
+
+    if (left||cursors.left.isDown)
+    {
+        //  Move to the left
+        player.body.velocity.x = -250;
+
+    }
+    else if (right||cursors.right.isDown)
+    {
+        //  Move to the right
+        player.body.velocity.x = 250;
+    }
+        //  Allow the player to jump if they are touching the ground.
+    if (up||cursors.up.isDown )
+    {
+        player.body.velocity.y = -200;
+    }
+    else if(down||cursors.down.isDown)
+    {
+        player.body.velocity.y=200;
+    }
+    
+     if (window.innerHeight>window.innerWidth) {
+alert('Put Device in Landscape Position and Reload!')
+//game.stop();
+document.location.assign('https://fish-society-nekatak.c9users.io/index.html')  }
+}
+
+
+function collisionFunction1(player, enemy1){
+       enemy1.kill();
+       score += 10;
+    scoreText.text = 'Score: ' + score;
+}
+
+function collisionFunction2(player, enemy2){
+    player.kill();
+    lives-=1;
+    livesText.text='lives: '+lives;
+    player.reset(50,300);
+    enemy2.reset(1.2*window.innerWidth*window.devicePixelRatio,Math.random()*window.innerHeight*window.devicePixelRatio);
+    if (lives==0){
+        alert('game over, sucker');
+        game.stop();
+    }
+}
+
+
+</script>    
+
+    </body>
+</html>
